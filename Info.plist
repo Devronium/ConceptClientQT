@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>Concept Client</string>
+	<key>CFBundleExecutable</key>
+	<string>ConceptClient</string>
+	<key>CFBundleIconFile</key>
+	<string>APPL.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.devronium.ConceptClient</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Concept Client (c) 2005-2016 Devronium Applications</string>
+	<key>CFBundleName</key>
+	<string>Concept Client</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>Mac OS X</string>
+	<key>CFBundleVersion</key>
+	<string>4.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>concept</string>
+		</dict>
+		<dict>
+			<key>CFBundleURLName</key>
+			<string>concepts</string>
+		</dict>
+	</array>
+	<key>CFBundleTypeExtensions</key>
+	<array>
+		<string>ss</string>
+		<string>ss3</string>
+	</array>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>ss</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeRole</key>
+			<string>Shell</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>APPL.icns</string>
+		</dict>
+		<dict>
+			<key>CFBundleTypeName</key>
+			<string>ss3</string>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+			<key>CFBundleTypeRole</key>
+			<string>Shell</string>
+			<key>CFBundleTypeIconFile</key>
+			<string>APPL.icns</string>
+		</dict>
+	</array>
+</dict>
+</plist>

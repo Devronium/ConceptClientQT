@@ -1,0 +1,28 @@
+1 VERSIONINFO
+FILEVERSION     4,0,0,0
+PRODUCTVERSION  4,0,0,0
+BEGIN
+  BLOCK "StringFileInfo"
+  BEGIN
+    BLOCK "040904E4"
+    BEGIN
+      VALUE "CompanyName", "Devronium Applications"
+      VALUE "FileDescription", "Concept Client"
+      VALUE "FileVersion", "3.0"
+      VALUE "InternalName", "Concept Client"
+      VALUE "LegalCopyright", "(c) 2006-2016 Devronium Applications"
+      VALUE "OriginalFilename", "ConClient3.exe"
+      VALUE "ProductName", "Concept Client"
+      VALUE "ProductVersion", "4.0"
+    END
+  END
+  BLOCK "VarFileInfo"
+  BEGIN
+    VALUE "Translation", 0x409, 1252
+  END
+END
+
+#include "resources.h"
+
+//IDI_ICON1               ICON                    "icon.ico"
+AppIcon			ICON                    "icon.ico"

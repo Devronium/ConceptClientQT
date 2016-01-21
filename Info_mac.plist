@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleIconFile</key>
+	<string>@ICON@</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Concept Client (c) 2005-2016 Devronium Applications</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.devronium.ConceptClient</string>
+	<key>CFBundleSignature</key>
+	<string>ttxt</string>
+	<key>CFBundleExecutable</key>
+	<string>@EXECUTABLE@</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>ss</string>
+				<string>ss3</string>
+			</array>
+			<key>CFBundleTypeIconFile</key>
+			<string>@ICON@</string>
+			<key>CFBundleTypeName</key>
+			<string>Concept Server application shortcut</string>
+			<key>CFBundleTypeOSTypes</key>
+			<array>
+				<string>ss</string>
+			</array>
+			<key>CFBundleTypeRole</key>
+			<string>Shell</string>
+		</dict>
+	</array>
+	<key>NOTE</key>
+	<string>ConeptClient by Devronium Applications</string>
+</dict>
+</plist>
