@@ -113,6 +113,7 @@ std::string UriEncode(const std::string& sSrc);
 
 AnsiString do_md5(AnsiString str);
 AnsiString do_sha1(AnsiString str);
+AnsiString do_sha256(AnsiString str);
 int SetCachedLogin(AnsiString username, AnsiString password, int flag, AnsiString *hash);
 int is_ipv6(char *str, int len, AnsiString *replaced_host = NULL);
 void Done(CConceptClient *CC, int res = 0, bool forced = false);

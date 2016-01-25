@@ -89,6 +89,7 @@ extern "C" {
 #endif
 #include "md5.h"
 #include "sha1.h"
+#include "sha256.h"
 }
 
 class DHeaderView : public QHeaderView {
@@ -659,6 +660,38 @@ AnsiString do_sha1(AnsiString str) {
     }
 
     res.LoadBuffer((char *)result, 40);
+    return res;
+}
+
+AnsiString do_sha256(AnsiString str) {
+    AnsiString  res;
+    sha256_context CTX;
+
+    sha256_starts(&CTX);
+    sha256_update(&CTX, (unsigned char *)str.c_str(), (long)str.Length());
+
+    unsigned char sha256_sum[32];
+
+    sha256_finish(&CTX, sha256_sum);
+
+    unsigned char result[64];
+
+    for (int i = 0; i < 32; i++) {
+        unsigned char first = sha256_sum[i] / 0x10;
+        unsigned char sec   = sha256_sum[i] % 0x10;
+
+        if (first < 10)
+            result[i * 2] = '0' + first;
+        else
+            result[i * 2] = 'a' + (first - 10);
+
+        if (sec < 10)
+            result[i * 2 + 1] = '0' + sec;
+        else
+            result[i * 2 + 1] = 'a' + (sec - 10);
+    }
+
+    res.LoadBuffer((char *)result, 64);
     return res;
 }
 
@@ -13219,9 +13252,18 @@ int MESSAGE_CALLBACK(Parameters *PARAM, Parameters *OUT_PARAM) {
                     if (PARAM->Sender == (char *)"SHA1") {
                         PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA1", AnsiString((long)res));
                         PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, msg.GetUsername(), do_sha1(PARAM->Owner->POST_TARGET + do_sha1(msg.GetPassword())));
-                    } else {
+                    } else
+                    if (PARAM->Sender == (char *)"SHA256") {
+                        PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA256", AnsiString((long)res));
+                        PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, msg.GetUsername(), do_sha256(PARAM->Owner->POST_TARGET + do_sha256(msg.GetPassword())));
+                    } else
+                    if ((PARAM->Sender == (char *)"PLAIN") || (!PARAM->Sender.Length())) {
                         PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "PLAIN", AnsiString((long)res));
                         PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, msg.GetUsername(), msg.GetPassword());
+                    } else {
+                        // fallback to sha1
+                        PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA1", AnsiString((long)res));
+                        PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, msg.GetUsername(), do_sha1(PARAM->Owner->POST_TARGET + do_sha1(msg.GetPassword())));
                     }
                     if ((res == RESPONSE_OK) && (hashsum.Length()))
                         SetCachedLogin(msg.GetUsername(), msg.GetPassword(), msg.remember(), &hashsum);
@@ -13540,10 +13582,19 @@ int MESSAGE_CALLBACK(Parameters *PARAM, Parameters *OUT_PARAM) {
                                 prefix = getenv("USERNAME");
                             if (prefix)
                                 did = prefix + AnsiString(",") + did + "//ConceptClient//";
-                            did = do_sha1(did);
+                            int use_sha256 = 0;
+                            if (PARAM->Value == (char *)"SHA256") {
+                                use_sha256 = 1;
+                                did = do_sha256(did);
+                            } else
+                                did = do_sha1(did);
 
-                            if (PARAM->Value.Length() > 1)
-                                did = do_sha1(PARAM->Value + did);
+                            if (PARAM->Value.Length() > 1) {
+                                if (use_sha256)
+                                    did = do_sha256(PARAM->Value + did);
+                                else
+                                    did = do_sha1(PARAM->Value + did);
+                            }
                         }
                     }
 #endif

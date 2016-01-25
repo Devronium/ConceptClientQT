@@ -104,9 +104,18 @@ void ConsoleWindow::on_OkButton_clicked() {
         if (this->method == (char *)"SHA1") {
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA1", AnsiString((long)RESPONSE_OK));
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), do_sha1(CC->POST_TARGET + do_sha1(this->GetPassword())));
-        } else {
+        } else
+        if (this->method == (char *)"SHA256") {
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA256", AnsiString((long)RESPONSE_OK));
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), do_sha256(CC->POST_TARGET + do_sha256(this->GetPassword())));
+        } else
+        if (this->method == (char *)"PLAIN") {
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "PLAIN", AnsiString((long)RESPONSE_OK));
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), this->GetPassword());
+        } else {
+            // fallback to SHA1
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA1", AnsiString((long)RESPONSE_OK));
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), do_sha1(CC->POST_TARGET + do_sha1(this->GetPassword())));
         }
         if (hashsum.Length())
             SetCachedLogin(this->GetUsername(), this->GetPassword(), this->remember(), &hashsum);
@@ -124,9 +133,18 @@ void ConsoleWindow::on_CancelButton_clicked() {
         if (this->method == (char *)"SHA1") {
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA1", AnsiString((long)RESPONSE_CLOSE));
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), do_sha1(CC->POST_TARGET + do_sha1(this->GetPassword())));
-        } else {
-            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "PLAIN", AnsiString((long)RESPONSE_CLOSE));
+        } else
+        if (this->method == (char *)"SHA256") {
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA256", AnsiString((long)RESPONSE_OK));
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), do_sha256(CC->POST_TARGET + do_sha256(this->GetPassword())));
+        } else
+        if (this->method == (char *)"PLAIN") {
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "PLAIN", AnsiString((long)RESPONSE_OK));
             CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), this->GetPassword());
+        } else {
+            // fallback to SHA1
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, "SHA1", AnsiString((long)RESPONSE_OK));
+            CC->SendMessageNoWait("%CLIENT", MSG_MESSAGE_LOGIN, this->GetUsername(), do_sha1(CC->POST_TARGET + do_sha1(this->GetPassword())));
         }
     }
     adjustSize();
