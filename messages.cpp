@@ -386,7 +386,7 @@ int DeSerializeBuffer(char *buffer, int size, AnsiString *Owner, int *message, A
 }
 
 //-----------------------------------------------------------------------------------
-char *SerializeBuffer(char **buffer, int *size, AnsiString *Owner, int message, AnsiString *Target, AnsiString *Value, bool buferize, FILE **file_buffer, int *fsize, char no_key, int *is_realtime) {
+char *SerializeBuffer(int RTSOCKET, char **buffer, int *size, AnsiString *Owner, int message, AnsiString *Target, AnsiString *Value, bool buferize, FILE **file_buffer, int *fsize, char no_key, int *is_realtime) {
     // OWNER poate avea maxim 256 octeti
     int vsize = Value->Length();
     int tlen  = Target->Length();
@@ -419,8 +419,10 @@ char *SerializeBuffer(char **buffer, int *size, AnsiString *Owner, int message, 
         if ((no_key) && (vsize) && (vsize <= 0x9FFF)) {
             unsigned int owner = Owner->ToInt();
             if (owner <= 0xFFF) {
-                if (vsize <= 0xFFFF)
-                    *is_realtime = 1;
+                if (vsize <= 65000) {
+                    if ((is_realtime) && (Owner) && (RTSOCKET > 0) && (serveraddr.ss_family))
+                        *is_realtime = 1;
+                }
                 *size = vsize;
                 char *ptr = new char[*size + sizeof(int)];
                 //*(unsigned int *)ptr=htonl(((unsigned int)*size) | (unsigned int)0xF0000000 | (owner << 24));
@@ -516,7 +518,7 @@ int send_message(CConceptClient *OWNER, AnsiString SENDER_NAME, int MESSAGE_ID, 
         MESSAGE_ID     = 0x110;
         MESSAGE_TARGET = "";
     }
-    char *base_ptr = SerializeBuffer(&buffer, &in_content_size, &SENDER_NAME, MESSAGE_ID, &MESSAGE_TARGET, &MESSAGE_DATA, buferize, &in, &file_buffer_size, (!REMOTE_PUBLIC_KEY) || (OWNER->is_http), &is_realtime);
+    char *base_ptr = SerializeBuffer(OWNER->RTSOCKET, &buffer, &in_content_size, &SENDER_NAME, MESSAGE_ID, &MESSAGE_TARGET, &MESSAGE_DATA, buferize, &in, &file_buffer_size, (!REMOTE_PUBLIC_KEY) || (OWNER->is_http), &is_realtime);
     int  size_n;
 
 
