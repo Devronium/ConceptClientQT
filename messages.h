@@ -18,6 +18,7 @@ void ResetMessages();
 int wait_message(CConceptClient *OWNER, TParameters *PARAM, int MESSAGE_ID, SOCKET CLIENT_SOCKET, char *LOCAL_PRIVATE_KEY, PROGRESS_API notify_parent = 0);
 int have_messages(CConceptClient *OWNER, SOCKET CLIENT_SOCKET);
 void InitUDP(CConceptClient *owner, int port);
+void SetVectors(unsigned char *v_send, int v_send_len, unsigned char *v_recv, int v_recv_len);
 AnsiString InitUDP2(CConceptClient *owner, char *host);
 AnsiString InitUDP3(CConceptClient *owner, char *host);
 AnsiString SwitchP2P(CConceptClient *owner, char *host);

@@ -1837,7 +1837,6 @@ void SafeDelete(CConceptClient *Client, GTKControl *item, bool delete_item = tru
 void Dispose(CConceptClient *Client, GTKControl *item, int delete_children = 1) {
     if (!item)
         return;
-
     if (item->ptr) {
         Client->Controls.erase(item->ID);
         if (item->ptr)
@@ -13691,6 +13690,19 @@ int MESSAGE_CALLBACK(Parameters *PARAM, Parameters *OUT_PARAM) {
                     if (val)
                         PARAM->Owner->InitTLS(cert_verify, val);
 #endif
+                } else
+                if (PARAM->Target == (char *)"Vectors") {
+                    int len = PARAM->Value.Length()/2;
+                    char *v_send = PARAM->Value.c_str();
+                    int v_send_len = len;
+                    if (v_send_len > 32)
+                        v_send_len = 32;
+                    char *v_recv = PARAM->Value.c_str() + len;
+                    int v_recv_len = len;
+                    if (v_recv_len > 32)
+                        v_recv_len = 32;
+                    SetVectors((unsigned char *)v_send, v_send_len, (unsigned char *)v_recv, v_recv_len);
+                    PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, "1");
                 } else
                     PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, PARAM->Value);
             }
