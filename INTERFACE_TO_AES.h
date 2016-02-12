@@ -65,23 +65,23 @@ AES_uint32 encrypt(char *in_buffer, AES_int32 in_buffer_size, char *out_buffer, 
     char      last_buf[64];
     AES_int32 in_buffer2_size = in_buffer_size;
     AES_int32 padding         = 0;
-    if (in_buffer_size % DecryptAes.bsize) {
-        in_buffer2_size = (in_buffer_size / DecryptAes.bsize + 1) * DecryptAes.bsize;
-        padding         = DecryptAes.bsize - (in_buffer2_size - in_buffer_size);
+    if (in_buffer_size % EncryptAes.bsize) {
+        in_buffer2_size = (in_buffer_size / EncryptAes.bsize + 1) * EncryptAes.bsize;
+        padding         = EncryptAes.bsize - (in_buffer2_size - in_buffer_size);
     }
 
     int size = 5;
     while (in_buffer2_size > 0) {
-        if ((in_buffer2_size == DecryptAes.bsize) && (padding)) {
+        if ((in_buffer2_size == EncryptAes.bsize) && (padding)) {
             memcpy(last_buf, in_buffer, padding);
             EncryptAes.Encrypt((unsigned char *)last_buf, (unsigned char *)out_buffer, 1, cbc ? AES::CBC : AES::ECB);
         } else
             EncryptAes.Encrypt((unsigned char *)in_buffer, (unsigned char *)out_buffer, 1, cbc ? AES::CBC : AES::ECB);
 
-        in_buffer2_size -= DecryptAes.bsize;
-        size            += DecryptAes.bsize;
-        in_buffer       += DecryptAes.bsize;
-        out_buffer      += DecryptAes.bsize;
+        in_buffer2_size -= EncryptAes.bsize;
+        size            += EncryptAes.bsize;
+        in_buffer       += EncryptAes.bsize;
+        out_buffer      += EncryptAes.bsize;
     }
     return size;
 }
