@@ -1494,7 +1494,10 @@ PREFIX int Invoke(void *context, int INVOKE_TYPE, ...) {
 
                 switch (prop_id) {
                     case P_CAPTION:
-                        scintilla_send_message((ScintillaEditBase *)context, SCI_SETTEXT, 0, (sptr_t)str_buffer);
+                        if (sci_text.Length())
+                            scintilla_send_message((ScintillaEditBase *)context, SCI_SETTEXT, 0, (sptr_t)str_buffer);
+                        else
+                            scintilla_send_message((ScintillaEditBase *)context, SCI_SETTEXT, 0, (sptr_t)"");
                         session_id++;
                         BackgroundParse(sci_text, context);
                         //background_run = QtConcurrent::run(BackgroundParse, sci_text, context);

@@ -1,7 +1,7 @@
 #ifndef __INTERFACE_TO_AES_H
 #define __INTERFACE_TO_AES_H
 
-#include "AES/AES.h"
+#include "AES/aes.h"
 #include <string.h>
 
 static AES  EncryptAes;
