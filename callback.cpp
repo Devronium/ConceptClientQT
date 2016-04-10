@@ -48,6 +48,7 @@
 #ifndef NO_WEBKIT
     #include <QWebFrame>
     #include <QWebInspector>
+    #include <QJsonDocument>
     #include "ManagedRequest.h"
     #include "ManagedPage.h"
 #endif
@@ -2968,6 +2969,8 @@ void CreateControl(Parameters *PARAM, CConceptClient *Client) {
             break;
 
 #ifndef NO_WEBKIT
+        case CLASS_HTMLSNAP:
+        case CLASS_CLIENTCHART:
         case 1001:
         case 1012:
             {
@@ -2990,6 +2993,18 @@ void CreateControl(Parameters *PARAM, CConceptClient *Client) {
 
                 control->ptr  = widget;
                 control->ptr2 = NULL;
+                if (type == CLASS_HTMLSNAP) {
+                    if (PARAM->Owner->POST_STRING.Length())
+                        control->ptr3 = new AnsiString(PARAM->Owner->POST_STRING);
+                    std::string header = PARAM->Owner->snapclasses_header[PARAM->Owner->POST_STRING.c_str()];
+                    std::string body = PARAM->Owner->snapclasses_body[PARAM->Owner->POST_STRING.c_str()];
+                    std::string html = "<html><head>";
+                    html += header;
+                    html += "</head><body>";
+                    html += body;
+                    html += "</body></html>";
+                    widget->setHtml(QString::fromUtf8(html.c_str()), QUrl(QString("file:///static/")));
+                }
             }
             break;
 #endif
@@ -3591,8 +3606,22 @@ void SetProperty(Parameters *PARAM, CConceptClient *Client) {
 #ifndef NO_WEBKIT
                     ((ManagedPage *)((QWebView *)item->ptr)->page())->ignoreNext = true;
                     ((QWebView *)item->ptr)->setHtml(QString::fromUtf8(PARAM->Value.c_str()), QUrl(QString("file:///static/")));
-                    property_set = true;
 #endif
+                    property_set = true;
+                    break;
+                case CLASS_HTMLSNAP:
+#ifndef NO_WEBKIT
+                    {
+                        QString str = QString::fromUtf8("document.body.innerHTML='");
+                        QString data =  QString::fromUtf8(PARAM->Value.c_str());
+                        data = data.replace("\\", "\\\\");
+                        data = data.replace("'", "\\'");
+                        str += data;
+                        str += QString::fromUtf8("';");
+                        ((QWebView *)item->ptr)->page()->mainFrame()->evaluateJavaScript(str);
+                    }
+#endif
+                    property_set = true;
                     break;
 
                 case CLASS_IMAGEMENUITEM:
@@ -9034,6 +9063,10 @@ void GetProperty(Parameters *PARAM, CConceptClient *Client, Parameters *OUT_PARA
                     res           = (char *)((QWebView *)item->ptr)->title().toUtf8().constData();
                     done_property = true;
                     break;
+                case CLASS_HTMLSNAP:
+                    res  = (char *)((QWebView *)item->ptr)->page()->mainFrame()->evaluateJavaScript(QString::fromUtf8("document.body.innerHTML")).toString().toUtf8().constData();
+                    done_property = true;
+                    break;
 #endif
             }
             break;
@@ -12182,6 +12215,24 @@ void MSG_CUSTOM_MESSAGE(Parameters *PARAM, CConceptClient *Client) {
                     }
                     break;
 
+#ifndef NO_WEBKIT
+                    case CLASS_HTMLSNAP:
+                        if ((PARAM->Value.Length() > 2) && (item->ptr3)) {
+                            AnsiString *class_name = (AnsiString *)item->ptr3;
+                            QString str = QString::fromUtf8(class_name->c_str());
+                            str += "Set({ \"Client\": { \"Fire\": function(RID, msg) { alert(\"Events not yet supported!\"); } }, \"RID\": \"\" + ";
+                            AnsiString obj_id = AnsiString((long)item->ID);
+                            str += obj_id.c_str();
+                            str += ", \"Object\": { \"ConceptClassID\": ";
+                            str += obj_id.c_str();
+                            str += " } }, ";
+                            str += PARAM->Value.c_str();
+                            str += ");";
+                            ((QWebView *)item->ptr)->page()->mainFrame()->evaluateJavaScript(str);
+                        } else
+                            fprintf(stderr, "Cannot call GET/SET for classless snap objects");
+                        break;
+#endif
                 default:
                     CustomMessage(item, PARAM->ID, PARAM->Target, PARAM->Value);
                     break;
@@ -12276,6 +12327,31 @@ void MSG_CUSTOM_MESSAGE(Parameters *PARAM, CConceptClient *Client) {
                                 }
                                 break;
                         }
+
+#ifndef NO_WEBKIT
+                    case CLASS_HTMLSNAP:
+                        if (item->ptr3) {
+                            AnsiString *class_name = (AnsiString *)item->ptr3;
+                            QString str = QString::fromUtf8(class_name->c_str());
+                            str += "Set({ \"Client\": { \"Fire\": function(RID, msg) { alert(\"Events not yet supported!\"); } }, \"RID\": \"\" + ";
+                            AnsiString obj_id = AnsiString((long)item->ID);
+                            str += obj_id.c_str();
+                            str += ", \"Object\": { \"ConceptClassID\": ";
+                            str += obj_id.c_str();
+                            str += " } }, \'";
+
+                            QString data =  QString::fromUtf8(PARAM->Value.c_str());
+                            data = data.replace("\\", "\\\\");
+                            data = data.replace("'", "\\'");
+
+                            str += data;
+                            str += "\');";
+                            ((QWebView *)item->ptr)->page()->mainFrame()->evaluateJavaScript(str);
+                        } else
+                            fprintf(stderr, "Cannot call GET/SET for classless snap objects");
+                        break;
+
+#endif
 
                     default:
                         CustomMessage(item, PARAM->ID, PARAM->Target, PARAM->Value);
@@ -13704,6 +13780,22 @@ int MESSAGE_CALLBACK(Parameters *PARAM, Parameters *OUT_PARAM) {
                     SetVectors((unsigned char *)v_send, v_send_len, (unsigned char *)v_recv, v_recv_len);
                     PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, "1");
                 } else
+#ifndef NO_WEBKIT
+                if (PARAM->Target == (char *)"HTML") {
+                    QStringList propertyNames;
+                    QStringList propertyKeys;
+                    QJsonDocument jsonResponse = QJsonDocument::fromJson(PARAM->Value.c_str());
+                    if (jsonResponse.isNull()) {
+                        fprintf(stderr, "Error parsing JSON\n");
+                        PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, "0");
+                    } else {
+                        QJsonObject jsonObject = jsonResponse.object();
+                        PARAM->Owner->snapclasses_header[PARAM->Sender.c_str()] = jsonObject["header"].toString().toUtf8().constData();
+                        PARAM->Owner->snapclasses_body[PARAM->Sender.c_str()] = jsonObject["html"].toString().toUtf8().constData();
+                        PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, "1");
+                    }
+                } else
+#endif
                     PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, PARAM->Value);
             }
             break;

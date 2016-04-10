@@ -170,6 +170,10 @@ public:
     AnsiList ShellList;
     std::map<int, GTKControl *>    Controls;
     std::map<void *, GTKControl *> ControlsReversed;
+#ifndef NO_WEBKIT
+    std::map<std::string, std::string> snapclasses_header;
+    std::map<std::string, std::string> snapclasses_body;
+#endif
     AnsiString POST_STRING;
     AnsiString POST_TARGET;
     int        POST_OBJECT;

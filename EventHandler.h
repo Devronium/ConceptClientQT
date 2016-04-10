@@ -23,7 +23,8 @@
             events       = new ClientEventHandler(item->ID, Client);     \
             item->events = events;                                       \
         }                                                                \
-        events->RegisterEvent(CLIENT_EVENT);                             \
+        if ((CLIENT_EVENT != EVENT_ON_EVENT) || (item->type != CLASS_HTMLSNAP)) \
+            events->RegisterEvent(CLIENT_EVENT);                         \
     }
 
 
