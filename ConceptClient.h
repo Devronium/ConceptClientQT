@@ -173,6 +173,7 @@ public:
 #ifndef NO_WEBKIT
     std::map<std::string, std::string> snapclasses_header;
     std::map<std::string, std::string> snapclasses_body;
+    std::map<std::string, std::string> snapclasses_full;
 #endif
     AnsiString POST_STRING;
     AnsiString POST_TARGET;

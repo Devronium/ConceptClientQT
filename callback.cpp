@@ -2996,14 +2996,19 @@ void CreateControl(Parameters *PARAM, CConceptClient *Client) {
                 if (type == CLASS_HTMLSNAP) {
                     if (PARAM->Owner->POST_STRING.Length())
                         control->ptr3 = new AnsiString(PARAM->Owner->POST_STRING);
-                    std::string header = PARAM->Owner->snapclasses_header[PARAM->Owner->POST_STRING.c_str()];
-                    std::string body = PARAM->Owner->snapclasses_body[PARAM->Owner->POST_STRING.c_str()];
-                    std::string html = "<html><head>";
-                    html += header;
-                    html += "</head><body>";
-                    html += body;
-                    html += "</body></html>";
-                    widget->setHtml(QString::fromUtf8(html.c_str()), QUrl(QString("file:///static/")));
+                    std::string full = PARAM->Owner->snapclasses_full[PARAM->Owner->POST_STRING.c_str()];
+                    if (full.size()) {
+                        widget->setHtml(QString::fromUtf8(full.c_str()), QUrl(QString("file:///static/")));
+                    } else {
+                        std::string header = PARAM->Owner->snapclasses_header[PARAM->Owner->POST_STRING.c_str()];
+                        std::string body = PARAM->Owner->snapclasses_body[PARAM->Owner->POST_STRING.c_str()];
+                        std::string html = "<html><head>";
+                        html += header;
+                        html += "</head><body>";
+                        html += body;
+                        html += "</body></html>";
+                        widget->setHtml(QString::fromUtf8(html.c_str()), QUrl(QString("file:///static/")));
+                    }
                 }
             }
             break;
@@ -13792,6 +13797,7 @@ int MESSAGE_CALLBACK(Parameters *PARAM, Parameters *OUT_PARAM) {
                         QJsonObject jsonObject = jsonResponse.object();
                         PARAM->Owner->snapclasses_header[PARAM->Sender.c_str()] = jsonObject["header"].toString().toUtf8().constData();
                         PARAM->Owner->snapclasses_body[PARAM->Sender.c_str()] = jsonObject["html"].toString().toUtf8().constData();
+                        PARAM->Owner->snapclasses_full[PARAM->Sender.c_str()] = jsonObject["content"].toString().toUtf8().constData();
                         PARAM->Owner->SendMessageNoWait("%CLIENT", MSG_CLIENT_QUERY, PARAM->Target, "1");
                     }
                 } else
