@@ -12332,6 +12332,7 @@ void MSG_CUSTOM_MESSAGE(Parameters *PARAM, CConceptClient *Client) {
                                 }
                                 break;
                         }
+                        break;
 
 #ifndef NO_WEBKIT
                     case CLASS_HTMLSNAP:
