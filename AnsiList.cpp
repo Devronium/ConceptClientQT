@@ -227,7 +227,3 @@ void AnsiList::Insert(void *data, int i, char data_type, char no_clean) {
             Cursor = (Node *)Cursor->_NextNode;
         }
 }
-
-AnsiList::~AnsiList(void) {
-    Clear();
-}
