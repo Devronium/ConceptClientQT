@@ -16,9 +16,9 @@
 #include <speex/speex.h>
 #endif
 #ifndef NO_OPUS
-#include <opus.h>
+#include <opus/opus.h>
 #endif
-#include "AES/AES.h"
+#include "AES/aes.h"
 #include "BasicMessages.h"
 
 #include <QAudioInput>
