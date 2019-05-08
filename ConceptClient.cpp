@@ -18,7 +18,7 @@
  #include <fcntl.h>
 #endif
 #ifdef __linux__
- #include <linux/random.h>
+ #include <sys/random.h>
 #endif
 
 #define TRAY_NOTIFY(x, y)
